@@ -1,5 +1,7 @@
 # Kubernetes course
-This repository contains the course files for my Kubernetes course on Udemy: https://www.udemy.com/learn-devops-the-complete-kubernetes-course/?couponCode=KUBERNETES_GITHUB
+This repository contains the course files of Kubernetes course on Udemy: https://www.udemy.com/learn-devops-the-complete-kubernetes-course/?couponCode=KUBERNETES_GITHUB
+
+Adapted from wardviaene
 
 # My Notes
 Using terminal on wsl
@@ -12,8 +14,10 @@ docker run hello-world
 
 ```
 minikube start
+```
 
-
+![](https://i.imgur.com/RJ4F17x.png)
+```
 ❯ minikube version
 minikube version: v1.27.0
 commit: 4243041b7a72319b9be7842a7d34b6767bbdac2b
@@ -25,6 +29,14 @@ https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 
 kubectl version --client --output=yaml  
 ```
+
+```
+kubectl config get-contexts
+
+
+kubectl config use-context <name of env>
+```
+
 
 Check status of minikube clusters
 ```
