@@ -2,6 +2,7 @@
 This repository contains the course files of Kubernetes course on Udemy: https://www.udemy.com/learn-devops-the-complete-kubernetes-course/?couponCode=KUBERNETES_GITHUB
 
 Adapted from wardviaene
+https://github.com/wardviaene/kubernetes-course
 
 # My Notes
 Using terminal on wsl
