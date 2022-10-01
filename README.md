@@ -4,7 +4,9 @@ This repository contains the course files for my Kubernetes course on Udemy: htt
 # My Notes
 Using terminal on wsl
 ```
-sudo docker run hello-world
+sudo dockerd
+
+docker run hello-world
 ```
 ```https://minikube.sigs.k8s.io/docs/start/```
 
