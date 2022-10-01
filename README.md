@@ -107,6 +107,8 @@ service/nodehelloworld-service exposed
 
 ## To get IP Address of the Cluster
 ```
+minikube service -all
+
 minikube service nodehelloworld-service --url
 
 http://127.0.0.1:39229
