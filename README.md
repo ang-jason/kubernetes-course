@@ -12,6 +12,7 @@ kubectl create deployment hello-kubernetes --image=k8s.gcr.io/echoserver:1.4 --p
 
 kubectl expose deployment hello-kubernetes --type=NodePort
 
+kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
 
 $ kubectl get service hello-kubernetes
 NAME               TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
@@ -571,6 +572,9 @@ Hello World! huatcake%
 
 You suppose to curl xxx.xxx:31081
 
+or ipconfig 
+
+http://192.168.50.74:31081/
 ```
 
 
