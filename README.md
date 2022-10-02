@@ -4,6 +4,27 @@ This repository contains the course files of Kubernetes course on Udemy: https:/
 Adapted from wardviaene
 https://github.com/wardviaene/kubernetes-course
 
+
+# If using Docker Desktop with Kubenetes enabled
+```
+
+kubectl create deployment hello-kubernetes --image=k8s.gcr.io/echoserver:1.4 --port=8080
+
+kubectl expose deployment hello-kubernetes --type=NodePort
+
+
+$ kubectl get service hello-kubernetes
+NAME               TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+hello-kubernetes   NodePort   10.108.173.209   <none>        8080:30149/TCP   36s
+
+
+$ curl localhost:30149
+CLIENT VALUES:
+client_address=192.168.65.3
+
+
+```
+
 # My Notes
 Using terminal on wsl
 ```
@@ -539,6 +560,7 @@ NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          
 helloworld-service   NodePort    10.101.106.51   <none>        31081:31081/TCP   3s
 kubernetes           ClusterIP   10.96.0.1       <none>        443/TCP           74m
 
+** minikube seems to provide another port number while using docker-desktop alone will keep the defined port number**
 
 ❯ minikube service helloworld-service --url
 http://127.0.0.1:33701
