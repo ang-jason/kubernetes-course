@@ -37,3 +37,18 @@ The push refers to repository [docker.io/angjason/k9s-demo]
 ```
 
 Refer to Docker-Demo for more details....
+
+```
+❯ nano index.js
+
+app.get('/', function (req, res) {
+  res.send('Hello World! huatcake v2');
+});
+
+
+❯ docker build . -t angjason/k9s-demo:v2
+
+❯ docker push angjason/k9s-demo:v2
+The push refers to repository [docker.io/angjason/k9s-demo]
+
+```

@@ -353,4 +353,52 @@ helloworld-deployment-779b795db5-z5t7d   1/1     Running   0          96s   app=
 deployment "helloworld-deployment" successfully rolled out
 
 
+
+❯ kubectl expose deployment helloworld-deployment --type=NodePort
+service/helloworld-deployment exposed
+
+❯ kubectl get service
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+helloworld-deployment   NodePort    10.100.47.217   <none>        3000:31524/TCP   20s
+kubernetes              ClusterIP   10.96.0.1       <none>        443/TCP          37m
+
+❯ kubectl describe service helloworld-deployment
+Name:                     helloworld-deployment
+Namespace:                default
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=helloworld
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.100.47.217
+IPs:                      10.100.47.217
+Port:                     <unset>  3000/TCP
+TargetPort:               3000/TCP
+NodePort:                 <unset>  31524/TCP
+Endpoints:                172.17.0.5:3000,172.17.0.6:3000,172.17.0.7:3000
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+
+```
+❯ minikube service helloworld-deployment --url
+http://127.0.0.1:35039
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
+
+After changing docker image
+
+❯ kubectl set image deployment/helloworld-deployment k8s-demo-ja=angjason/k9s-demo:v2
+deployment.apps/helloworld-deployment image updated
+
+❯ kubectl rollout status deployment/helloworld-deployment
+Waiting for deployment "helloworld-deployment" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "helloworld-deployment" rollout to finish: 1 old replicas are pending termination...
+deployment "helloworld-deployment" successfully rolled out
+
+
+❯ curl http://127.0.0.1:35039
+Hello World! huatcake v2%
+
 ```
