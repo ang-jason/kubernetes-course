@@ -470,4 +470,138 @@ REVISION  CHANGE-CAUSE
 Hello World! huatcake%
 
 
+❯ kubectl delete deployment/helloworld-deployment
+deployment.apps "helloworld-deployment" deleted
+
+❯ kubectl delete svc helloworld-deployment
+service "helloworld-deployment" deleted
+
+```
+
+## Serivces
+
+```
+port:31001 -> type NodePort
+
+targetPort: nodejs-port
+
+nodePort: can dont specific by specific 31001 for easy reference
+
+```
+
+```
+❯ kubectl get node
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   59m   v1.25.0
+
+❯ kubectl get pods
+No resources found in default namespace.
+
+
+❯ kubectl create -f 01-first-app/helloworld.yml
+pod/nodehelloworld.example.com created
+
+
+❯ kubectl describe pod nodehelloworld.example.com
+Name:             nodehelloworld.example.com
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Sun, 02 Oct 2022 12:59:25 +0800
+Labels:           app=helloworld
+Annotations:      <none>
+Status:           Running
+IP:               172.17.0.5
+
+
+❯ cat 01-first-app/helloworld-nodeport-service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld-service
+spec:
+  ports:
+  - port: 31001
+    nodePort: 31001
+    targetPort: nodejs-port
+    protocol: TCP
+  selector:
+    app: helloworld
+  type: NodePort
+
+❯ kubectl create -f 01-first-app/helloworld-nodeport-service.yml
+service/helloworld-service created
+
+
+❯ kubectl get service
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)           AGE
+helloworld-service   NodePort    10.101.106.51   <none>        31081:31081/TCP   3s
+kubernetes           ClusterIP   10.96.0.1       <none>        443/TCP           74m
+
+
+❯ minikube service helloworld-service --url
+http://127.0.0.1:33701
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
+
+❯ curl http://127.0.0.1:33701
+Hello World! huatcake%
+
+You suppose to curl xxx.xxx:31081
+
+```
+
+
+## Labels
+
+```
+$ kubectl label nodes node1 hardware=high-spec
+$ kubectl label nodes node2 hardware=low-spec
+
+
+      nodeSelector:
+        hardware: high-spec
+
+
+❯ kubectl create -f 03-deployment/helloworld-nodeselector.yml
+deployment.apps/helloworld-deployment created
+
+
+❯ kubectl get deployments
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+hello-minikube          1/1     1            1           54m
+helloworld-deployment   0/3     3            0           24s
+
+
+❯ kubectl describe deployment helloworld-deployment
+Name:                   helloworld-deployment
+
+
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  62s   deployment-controller  Scaled up replica set helloworld-deployment-7dd7dc894 to 3
+
+
+❯ kubectl get nodes --show-labels
+NAME       STATUS   ROLES           AGE   VERSION   LABELS
+minikube   Ready    control-plane   59m   v1.25.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=minikube,kubernetes.io/os=linux,minikube.k8s.io/commit=4243041b7a72319b9be7842a7d34b6767bbdac2b,minikube.k8s.io/name=minikube,minikube.k8s.io/primary=true,minikube.k8s.io/updated_at=2022_10_02T13_32_42_0700,minikube.k8s.io/version=v1.27.0,node-role.kubernetes.io/control-plane=,node.kubernetes.io/exclude-from-external-load-balancers=
+
+
+
+❯ kubectl label nodes minikube hardware=high-spec
+node/minikube labeled
+
+❯ kubectl get nodes --show-labels
+NAME       STATUS   ROLES           AGE   VERSION   LABELS
+minikube   Ready    control-plane   61m   v1.25.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,hardware=high-spec,kubernetes.io/arch=amd64,kubernetes.io/hostname=minikube,kubernetes.io/os=linux,minikube.k8s.io/commit=4243041b7a72319b9be7842a7d34b6767bbdac2b,minikube.k8s.io/name=minikube,minikube.k8s.io/primary=true,minikube.k8s.io/updated_at=2022_10_02T13_32_42_0700,minikube.k8s.io/version=v1.27.0,node-role.kubernetes.io/control-plane=,node.kubernetes.io/exclude-from-external-load-balancers=
+
+"hardware=high-spec"
+
+❯ kubectl get pods
+NAME                                    READY   STATUS              RESTARTS        AGE
+hello-minikube-68ff6fd96-jr4qt          1/1     Running             1 (6m40s ago)   58m
+helloworld-deployment-7dd7dc894-d5rzz   0/1     ContainerCreating   0               4m37s
+helloworld-deployment-7dd7dc894-q4blg   0/1     ContainerCreating   0               4m37s
+helloworld-deployment-7dd7dc894-qv2w6   0/1     ContainerCreating   0               4m37s
+
 ```
