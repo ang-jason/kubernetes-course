@@ -70,7 +70,8 @@ NAME       STATUS   ROLES           AGE    VERSION
 minikube   Ready    control-plane   120m   v1.25.0
 ```
 
-
+## kind: Pod
+## 01-first-app
 ```
 kubectl create -f 01-first-app/helloworld.yml
 
@@ -220,7 +221,7 @@ GET /
 ```
 
 
-
+## kind: ReplicationController
 ## 02 - replication-controller
 ```
 spec container > metadata > kind (ReplicationController) spec selector (app: helloworld)
@@ -316,3 +317,13 @@ NAME                          READY   STATUS        RESTARTS   AGE
 helloworld-controller-m7tkz   1/1     Terminating   0          4m24s
 helloworld-controller-mbkcn   1/1     Terminating   0          8m9s
 ```
+## kind: Deployment
+### Replica Set is the next-gen Replication Controller
+This Replica Set is used by Deployment object rather than Replication Controller
+
+- With a deployment object you can:
+- Create a deployment (e.g. deploying an app)
+- Update a deployment (e.g. deploying a new version)
+- Do rolling updates (zero downtime deployments)
+- Roll back to a previous version
+- Pause / Resume a deployment (e.g. to roll-out to only a certain percentage)
