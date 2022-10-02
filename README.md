@@ -327,3 +327,30 @@ This Replica Set is used by Deployment object rather than Replication Controller
 - Do rolling updates (zero downtime deployments)
 - Roll back to a previous version
 - Pause / Resume a deployment (e.g. to roll-out to only a certain percentage)
+
+```
+❯ kubectl create -f 03-deployment/helloworld.yml
+deployment.apps/helloworld-deployment created
+
+
+❯ kubectl get deployments
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+helloworld-deployment   3/3     3            3           33s
+
+(replica sets)
+❯ kubectl get rs
+NAME                               DESIRED   CURRENT   READY   AGE
+helloworld-deployment-779b795db5   3         3         3       64s
+
+
+❯ kubectl get pods --show-labels
+NAME                                     READY   STATUS    RESTARTS   AGE   LABELS
+helloworld-deployment-779b795db5-4p7mx   1/1     Running   0          96s   app=helloworld,pod-template-hash=779b795db5
+helloworld-deployment-779b795db5-pzjs9   1/1     Running   0          96s   app=helloworld,pod-template-hash=779b795db5
+helloworld-deployment-779b795db5-z5t7d   1/1     Running   0          96s   app=helloworld,pod-template-hash=779b795db5
+
+❯ kubectl rollout status deployment/helloworld-deployment
+deployment "helloworld-deployment" successfully rolled out
+
+
+```
