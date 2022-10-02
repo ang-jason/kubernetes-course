@@ -604,4 +604,30 @@ helloworld-deployment-7dd7dc894-d5rzz   0/1     ContainerCreating   0           
 helloworld-deployment-7dd7dc894-q4blg   0/1     ContainerCreating   0               4m37s
 helloworld-deployment-7dd7dc894-qv2w6   0/1     ContainerCreating   0               4m37s
 
+
+❯ kubectl get pods
+NAME                                    READY   STATUS    RESTARTS   AGE
+helloworld-deployment-7dd7dc894-7sc69   1/1     Running   0          103s
+helloworld-deployment-7dd7dc894-d9ftx   1/1     Running   0          103s
+helloworld-deployment-7dd7dc894-pwwcg   1/1     Running   0          103s
+
+
+
+
+
+❯ kubectl describe pods
+Name:             helloworld-deployment-7dd7dc894-7sc69
+
+
+Events:
+  Type     Reason            Age    From               Message
+  ----     ------            ----   ----               -------
+  Warning  FailedScheduling  2m50s  default-scheduler  0/1 nodes are available: 1 node(s) didn't match Pod's node affinity/selector. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+  Normal   Scheduled         119s   default-scheduler  Successfully assigned default/helloworld-deployment-7dd7dc894-pwwcg to minikube
+  Normal   Pulling           118s   kubelet            Pulling image "angjason/k9s-demo"
+  Normal   Pulled            85s    kubelet            Successfully pulled image "angjason/k9s-demo" in 32.768299335s
+  Normal   Created           84s    kubelet            Created container k8s-demo-ja
+  Normal   Started           84s    kubelet            Started container k8s-demo-ja
+
+
 ```
