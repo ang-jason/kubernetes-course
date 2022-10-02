@@ -218,3 +218,101 @@ Connected to 172.17.0.5:3000
 
 GET /
 ```
+
+
+
+## 02 - replication-controller
+```
+spec container > metadata > kind (ReplicationController) spec selector (app: helloworld)
+
+kubectl get nods
+
+kubectl create -f 02-replication-controller/helloworld-repl-controller.yml
+replicationcontroller/helloworld-controller created
+
+
+❯ kubectl get pods
+NAME                          READY   STATUS              RESTARTS   AGE
+helloworld-controller-6r526   0/1     ContainerCreating   0          23s
+helloworld-controller-mbkcn   0/1     ContainerCreating   0          23s
+
+
+❯ kubectl describe pod helloworld-controller-6r526
+
+Name:             helloworld-controller-6r526
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Sun, 02 Oct 2022 12:03:29 +0800
+Labels:           app=helloworld
+Annotations:      <none>
+Status:           Running
+
+
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  72s   default-scheduler  Successfully assigned default/helloworld-controller-6r526 to minikube
+  Normal  Pulling    70s   kubelet            Pulling image "angjason/k9s-demo"
+  Normal  Pulled     24s   kubelet            Successfully pulled image "angjason/k9s-demo" in 46.687333439s
+  Normal  Created    23s   kubelet            Created container k8s-demo-ja
+  Normal  Started    23s   kubelet            Started container k8s-demo-ja
+
+
+
+kubectl delete pod helloworld-controller-6r526
+pod "helloworld-controller-6r526" deleted
+
+
+❯ kubectl get pods
+NAME                          READY   STATUS        RESTARTS   AGE
+helloworld-controller-6r526   1/1     Terminating   0          2m33s
+helloworld-controller-6tcmf   1/1     Running       0          9s
+helloworld-controller-mbkcn   1/1     Running       0          2m33s
+
+
+❯ kubectl scale --replicas=4 -f 02-replication-controller/helloworld-repl-controller.yml
+
+replicationcontroller/helloworld-controller scaled
+
+
+❯ kubectl get pods
+NAME                          READY   STATUS    RESTARTS   AGE
+helloworld-controller-4z76j   1/1     Running   0          20s
+helloworld-controller-6tcmf   1/1     Running   0          101s
+helloworld-controller-m7tkz   1/1     Running   0          20s
+helloworld-controller-mbkcn   1/1     Running   0          4m5s
+
+❯ kubectl get rc
+NAME                    DESIRED   CURRENT   READY   AGE
+helloworld-controller   4         4         4       4m30s
+
+
+❯ kubectl scale --replicas=2 rc/helloworld-controller
+replicationcontroller/helloworld-controller scaled
+
+❯ kubectl get rc
+NAME                    DESIRED   CURRENT   READY   AGE
+helloworld-controller   2         2         2       6m24s
+
+
+❯ kubectl get pods
+NAME                          READY   STATUS        RESTARTS   AGE
+helloworld-controller-4z76j   1/1     Terminating   0          2m49s
+helloworld-controller-6tcmf   1/1     Terminating   0          4m10s
+helloworld-controller-m7tkz   1/1     Running       0          2m49s
+helloworld-controller-mbkcn   1/1     Running       0          6m34s
+```
+### Only horizontal scale with stateless app.
+
+```
+❯ kubectl delete rc/helloworld-controller
+replicationcontroller "helloworld-controller" deleted
+
+
+❯ kubectl get pods
+NAME                          READY   STATUS        RESTARTS   AGE
+helloworld-controller-m7tkz   1/1     Terminating   0          4m24s
+helloworld-controller-mbkcn   1/1     Terminating   0          8m9s
+```
