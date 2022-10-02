@@ -401,4 +401,73 @@ deployment "helloworld-deployment" successfully rolled out
 ❯ curl http://127.0.0.1:35039
 Hello World! huatcake v2%
 
+
+❯ kubectl rollout history deployment/helloworld-deployment
+deployment.apps/helloworld-deployment
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+
+❯ kubectl create -f 03-deployment/helloworld.yml --record="remarks of CHANGE-CAUSE"
+
+❯ kubectl rollout undo deployment/helloworld-deployment
+deployment.apps/helloworld-deployment rolled back
+
+
+❯ kubectl get pods
+NAME                                     READY   STATUS              RESTARTS   AGE
+helloworld-deployment-5984d977b5-2kb94   1/1     Running             0          4m54s
+helloworld-deployment-5984d977b5-5rshq   1/1     Terminating         0          4m43s
+helloworld-deployment-5984d977b5-j8s5k   1/1     Terminating         0          4m37s
+helloworld-deployment-779b795db5-gslpl   0/1     ContainerCreating   0          0s
+helloworld-deployment-779b795db5-p9g75   1/1     Running             0          7s
+helloworld-deployment-779b795db5-vtqvs   1/1     Running             0          13s
+
+
+
+❯ curl http://127.0.0.1:35039
+Hello World! huatcake%
+
+
+
+❯ kubectl rollout history deployment/helloworld-deployment
+deployment.apps/helloworld-deployment
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+
+❯ kubectl rollout history deployment/helloworld-deployment
+
+
+❯ kubectl edit deployment/helloworld-deployment
+deployment.apps/helloworld-deployment edited
+
+revisionHistoryLimit: 10
+
+❯ kubectl set image deployment/helloworld-deployment k8s-demo-ja=angjason/k9s-demo:latest
+deployment.apps/helloworld-deployment image updated
+
+
+❯ kubectl rollout history deployment/helloworld-deployment
+deployment.apps/helloworld-deployment
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+4         <none>
+
+❯ kubectl rollout undo deployment/helloworld-deployment --to-revision=3
+deployment.apps/helloworld-deployment rolled back
+
+
+❯ kubectl rollout history deployment/helloworld-deployment
+deployment.apps/helloworld-deployment
+REVISION  CHANGE-CAUSE
+2         <none>
+4         <none>
+5         <none>
+
+❯ curl http://127.0.0.1:35039
+Hello World! huatcake%
+
+
 ```
