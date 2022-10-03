@@ -31,6 +31,9 @@ Using terminal on wsl
 ```
 sudo dockerd
 
+
+❯ sudo service docker start
+
 docker run hello-world
 ```
 ```https://minikube.sigs.k8s.io/docs/start/```
@@ -91,6 +94,23 @@ kubectl get node
 NAME       STATUS   ROLES           AGE    VERSION
 minikube   Ready    control-plane   120m   v1.25.0
 ```
+
+## kubectl test
+
+```
+kubectl create deployment hello-kubernetes --image=k8s.gcr.io/echoserver:1.4 --port=8080
+
+kubectl expose deployment hello-kubernetes --type=NodePort
+
+
+kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
+
+```
+
+
+
+
+
 
 ## kind: Pod
 ## 01-first-app
