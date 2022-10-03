@@ -105,6 +105,8 @@ kubectl expose deployment hello-kubernetes --type=NodePort
 
 kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
 
+❯ minikube ip
+
 ```
 
 
@@ -789,4 +791,191 @@ helloworld-readiness-784498bcf4-5s86s    0/1     Running   0          29s
 helloworld-readiness-784498bcf4-qg8fh    0/1     Running   0          29s
 helloworld-readiness-784498bcf4-xwkmv    0/1     Running   0          29s
 
+```
+
+
+## 04-pod-lifecycle
+## Pod Lifecycle
+
+
+```
+❯ kubectl create -f 04-pod-lifecycle/lifecycle.yaml && watch -n kubectl get pods
+
+or split screens to see the effect
+
+
+❯ kubectl create -f 04-pod-lifecycle/lifecycle.yaml
+deployment.apps/lifecycle created
+
+Every 1.0s: kubectl get pods                                                   DESKTOP-11808A8: Mon Oct  3 21:47:53 2022
+
+NAME                         READY   STATUS     RESTARTS   AGE
+lifecycle-74c7f84c7c-7ql92   0/1     Init:0/1   0          8s
+
+lifecycle-74c7f84c7c-7ql92   0/1     PodInitializing   0          18s
+
+lifecycle-74c7f84c7c-7ql92   1/1     Running   0          90s
+
+
+❯ kubectl exec -it lifecycle-74c7f84c7c-7ql92 -- tail /timing -f
+
+Defaulted container "lifecycle-container-ja" out of: lifecycle-container-ja, init (init)
+1664804883: Running
+1664804883: postStart
+1664804893: end postStart
+1664804925: readinessProbe
+1664804925: livenessProbe
+1664804935: livenessProbe
+1664804935: readinessProbe
+1664804945: livenessProbe
+1664804945: readinessProbe
+1664804955: readinessProbe
+1664804955: livenessProbe
+1664804965: readinessProbe
+1664804965: livenessProbe
+1664804975: livenessProbe
+1664804975: readinessProbe
+1664804985: livenessProbe
+1664804985: readinessProbe
+1664804995: livenessProbe
+1664804995: readinessProbe
+command terminated with exit code 137
+
+Continue as long as main container is alive
+
+NAME                         READY   STATUS      RESTARTS       AGE
+lifecycle-74c7f84c7c-7ql92   0/1     Completed   1 (2m9s ago)   4m27s
+
+
+
+kubectl delete deployments --all
+```
+
+
+
+
+## 03-deployment
+## Secrets / Volume
+
+
+```
+
+❯ kubectl create -f 03-deployment/helloworld-secrets.yml
+secret/db-secrets created
+
+❯ kubectl rollout restart -f 03-deployment/helloworld-secrets-volumes.yml
+deployment.apps/helloworld-deployment restarted
+
+
+❯ kubectl create -f 03-deployment/helloworld-secrets-volumes.yml
+deployment.apps/helloworld-deployment created
+
+
+❯ kubectl get pods
+NAME                                     READY   STATUS              RESTARTS   AGE
+helloworld-deployment-5956f7cc6c-2xqk4   0/1     ContainerCreating   0          8s
+helloworld-deployment-5956f7cc6c-tpwnv   0/1     ContainerCreating   0          8s
+helloworld-deployment-5956f7cc6c-xh5nw   0/1     ContainerCreating   0          8s
+
+
+
+❯ kubectl describe pod helloworld-deployment-5c89478f75-6m45n
+Name:             helloworld-deployment-5c89478f75-6m45n
+    Mounts:
+      /etc/creds from cred-volume (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-6pzwz (ro)
+
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  45s   default-scheduler  Successfully assigned default/helloworld-deployment-5c89478f75-6m45n to minikube
+  Normal  Pulling    45s   kubelet            Pulling image "angjason/k9s-demo"
+  Normal  Pulled     42s   kubelet            Successfully pulled image "angjason/k9s-demo" in 3.157016299s
+  Normal  Created    42s   kubelet            Created container k8s-demo-ja
+  Normal  Started    42s   kubelet            Started container k8s-demo-ja
+
+
+
+❯ kubectl get secrets
+NAME         TYPE     DATA   AGE
+db-secrets   Opaque   2      3m53s  
+
+
+
+❯ kubectl exec -it helloworld-deployment-5c89478f75-6m45n -- /bin/bash
+root@helloworld-deployment-5c89478f75-6m45n:/app#
+
+root@helloworld-deployment-5c89478f75-6m45n:/app# cat /etc/creds/username
+rootroot@helloworld-deployment-5c89478f75-6m45n:/app# cat /etc/creds/password
+passwordroot@helloworld-deployment-5c89478f75-6m45n:/app#
+
+root@helloworld-deployment-5c89478f75-6m45n:/app# mount
+
+tmpfs on /etc/creds type tmpfs (ro,relatime,size=12561268k)
+tmpfs on /run/secrets/kubernetes.io/serviceaccount type tmpfs (ro,relatime,size=12561268k)
+
+
+root@helloworld-deployment-5c89478f75-6m45n:/app# ls  /run/secrets/kubernetes.io/serviceaccount
+ca.crt  namespace  token
+
+exit
+```
+
+
+## 06-wordpress
+## Wordpress / Wordpress secrets
+
+```
+❯ kubectl create -f 06-wordpress/wordpress-secrets.yml
+secret/wordpress-secrets created
+
+
+❯ kubectl create -f 06-wordpress/wordpress-single-deployment-no-volumes.yml
+deployment.apps/wordpress-deployment created
+
+❯ kubectl get pods
+NAME                                    READY   STATUS              RESTARTS   AGE
+wordpress-deployment-7444749967-k82f4   0/2     ContainerCreating   0          12s
+
+
+❯ kubectl describe pod wordpress-deployment-7444749967-k82f4
+Name:             wordpress-deployment-7444749967-k82f4
+
+
+  Normal  Started    5s                kubelet            Started container mysql
+  Normal  Created    4s (x2 over 32s)  kubelet            Created container wordpress
+  Normal  Started    4s (x2 over 32s)  kubelet            Started container wordpress
+
+
+❯ kubectl create -f 06-wordpress/wordpress-service.yml
+service/wordpress-service created
+
+
+❯ kubectl get svc
+NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)           AGE
+kubernetes          ClusterIP   10.96.0.1       <none>        443/TCP           31h
+wordpress-service   NodePort    10.97.240.181   <none>        31001:31001/TCP   80s
+
+
+❯ minikube service wordpress-service --url
+http://127.0.0.1:39093
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
+
+
+kubectl delete pod <one of the pods>
+
+*wordpress is being restarted - as there is no volume mount - this demonstrate stateless effect*
+
+❯ kubectl delete deployments --all
+deployment.apps "wordpress-deployment" deleted
+
+
+❯ kubectl delete svc --all
+service "kubernetes" deleted
+service "wordpress-service" deleted
+
+
+❯ kubectl delete secrets --all
+secret "db-secrets" deleted
+secret "wordpress-secrets" deleted
 ```
