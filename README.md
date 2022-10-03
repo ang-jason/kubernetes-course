@@ -680,3 +680,113 @@ Events:
 
 ## Healthcheck
 ## 03-deployment
+
+
+```
+        livenessProbe:
+          httpGet:
+            path: /
+            port: nodejs-port
+          initialDelaySeconds: 15
+          timeoutSeconds: 30
+```
+
+```
+❯ kubectl create -f 03-deployment/helloworld-healthcheck.yml
+deployment.apps/helloworld-deployment created
+
+❯ kubectl get pods
+NAME                                     READY   STATUS    RESTARTS   AGE
+helloworld-deployment-56d7788695-kfrrp   1/1     Running   0          54s
+helloworld-deployment-56d7788695-vq9lp   1/1     Running   0          54s
+
+
+❯ kubectl describe pod helloworld-deployment-56d7788695-vq9lp
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  34s   default-scheduler  Successfully assigned default/helloworld-deployment-56d7788695-vq9lp to minikube
+  Normal  Pulling    32s   kubelet            Pulling image "angjason/k9s-demo"
+  Normal  Pulled     26s   kubelet            Successfully pulled image "angjason/k9s-demo" in 6.200603782s
+  Normal  Created    26s   kubelet            Created container k8s-demo-ja
+  Normal  Started    26s   kubelet            Started container k8s-demo-ja
+
+
+
+❯ kubectl edit -f 03-deployment/helloworld-healthcheck.yml
+
+
+      - image: angjason/k9s-demo
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: nodejs-port
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 30
+
+
+
+
+❯ kubectl delete --all deployments
+deployment.apps "helloworld-deployment" deleted
+
+
+```
+
+
+
+## 03-deployment 
+## liveness-readiness
+```
+
+❯ kubectl create -f 03-deployment/helloworld-healthcheck.yml && watch -n kubectl get pods
+
+Every 1.0s: kubectl get pods                                                   DESKTOP-11808A8: Mon Oct  3 21:37:36 2022
+
+NAME                                     READY   STATUS              RESTARTS   AGE
+helloworld-deployment-56d7788695-f2nb5   0/1     ContainerCreating   0          2s
+helloworld-deployment-56d7788695-mn8cd   0/1     ContainerCreating   0          2s
+
+Every 1.0s: kubectl get pods                                                   DESKTOP-11808A8: Mon Oct  3 21:37:47 2022
+
+NAME                                     READY   STATUS    RESTARTS   AGE
+helloworld-deployment-56d7788695-f2nb5   1/1     Running   0          13s
+helloworld-deployment-56d7788695-mn8cd   1/1     Running   0          13s
+
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: nodejs-port
+          initialDelaySeconds: 15
+          timeoutSeconds: 30
+
+```
+
+```
+❯ kubectl create -f 03-deployment/helloworld-liveness-readiness.yml && watch -n kubectl get pods
+
+
+Every 1.0s: kubectl get pods                                                   DESKTOP-11808A8: Mon Oct  3 21:40:59 2022
+
+NAME                                     READY   STATUS              RESTARTS   AGE
+helloworld-deployment-56d7788695-f2nb5   1/1     Running             0          3m25s
+helloworld-deployment-56d7788695-mn8cd   1/1     Running             0          3m25s
+helloworld-readiness-784498bcf4-487nm    0/1     ContainerCreating   0          3s
+helloworld-readiness-784498bcf4-5s86s    0/1     ContainerCreating   0          3s
+helloworld-readiness-784498bcf4-qg8fh    0/1     ContainerCreating   0          3s
+helloworld-readiness-784498bcf4-xwkmv    0/1     ContainerCreating   0          3s
+
+*Ready not ready 0/1 (readinessProbe)*
+
+helloworld-readiness-784498bcf4-487nm    1/1     Running   0          29s
+helloworld-readiness-784498bcf4-5s86s    0/1     Running   0          29s
+helloworld-readiness-784498bcf4-qg8fh    0/1     Running   0          29s
+helloworld-readiness-784498bcf4-xwkmv    0/1     Running   0          29s
+
+```
